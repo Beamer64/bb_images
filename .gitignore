@@ -1,0 +1,16 @@
+# IDE
+.idea/
+*.iml
+*.iws
+.vscode/
+
+# Build artifacts
+out/
+vendor/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Tool data
+.claude/
