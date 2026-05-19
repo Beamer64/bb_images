@@ -103,3 +103,63 @@ func absInt(x int) int {
 	}
 	return x
 }
+
+// ConnectedRegions returns the axis-aligned bounding rectangle of each
+// connected component of pixels in markers whose color matches target
+// within tolerance (per RGB channel). Uses 4-connectivity. Useful when a
+// single marker color is painted as multiple disjoint blobs (e.g. one
+// avatar marker per slot) and each blob needs its own placement.
+func ConnectedRegions(markers image.Image, target color.RGBA, tolerance int) []image.Rectangle {
+	b := markers.Bounds()
+	w, h := b.Dx(), b.Dy()
+	visited := make([]bool, w*h)
+	idx := func(x, y int) int { return (y-b.Min.Y)*w + (x - b.Min.X) }
+	matches := func(x, y int) bool {
+		r, g, bl, _ := markers.At(x, y).RGBA()
+		return absInt(int(r>>8)-int(target.R)) <= tolerance &&
+			absInt(int(g>>8)-int(target.G)) <= tolerance &&
+			absInt(int(bl>>8)-int(target.B)) <= tolerance
+	}
+
+	var regions []image.Rectangle
+	neighbors := [4]image.Point{{X: 1, Y: 0}, {X: -1, Y: 0}, {X: 0, Y: 1}, {X: 0, Y: -1}}
+	for y := b.Min.Y; y < b.Max.Y; y++ {
+		for x := b.Min.X; x < b.Max.X; x++ {
+			if visited[idx(x, y)] || !matches(x, y) {
+				continue
+			}
+			minX, maxX, minY, maxY := x, x, y, y
+			queue := []image.Point{{X: x, Y: y}}
+			visited[idx(x, y)] = true
+			for len(queue) > 0 {
+				p := queue[0]
+				queue = queue[1:]
+				if p.X < minX {
+					minX = p.X
+				}
+				if p.X > maxX {
+					maxX = p.X
+				}
+				if p.Y < minY {
+					minY = p.Y
+				}
+				if p.Y > maxY {
+					maxY = p.Y
+				}
+				for _, d := range neighbors {
+					nx, ny := p.X+d.X, p.Y+d.Y
+					if nx < b.Min.X || nx >= b.Max.X || ny < b.Min.Y || ny >= b.Max.Y {
+						continue
+					}
+					if visited[idx(nx, ny)] || !matches(nx, ny) {
+						continue
+					}
+					visited[idx(nx, ny)] = true
+					queue = append(queue, image.Point{X: nx, Y: ny})
+				}
+			}
+			regions = append(regions, image.Rect(minX, minY, maxX+1, maxY+1))
+		}
+	}
+	return regions
+}

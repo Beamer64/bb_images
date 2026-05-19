@@ -17,10 +17,10 @@ import (
 	"golang.org/x/image/math/fixed"
 )
 
-//go:embed res/change-my-mind.jpg
+//go:embed res/change-my-mind.png
 var changeMyMindBytes []byte
 
-//go:embed res/markers/change-my-mind.markers.png
+//go:embed res/markers/change-my-mind.marker.png
 var changeMyMindMarkersBytes []byte
 
 // Marker colors used to detect editable regions in the markers file.
@@ -132,10 +132,12 @@ func renderFittedText(text string, w, h int, opts textOpts) (*image.RGBA, error)
 	)
 
 	if opts.FixedPt > 0 {
-		face, ferr := opentype.NewFace(ttf, &opentype.FaceOptions{
-			Size: float64(opts.FixedPt),
-			DPI:  72,
-		})
+		face, ferr := opentype.NewFace(
+			ttf, &opentype.FaceOptions{
+				Size: float64(opts.FixedPt),
+				DPI:  72,
+			},
+		)
 		if ferr != nil {
 			return nil, ferr
 		}
@@ -145,10 +147,12 @@ func renderFittedText(text string, w, h int, opts textOpts) (*image.RGBA, error)
 		lo, hi := minFontPt, maxFontPt
 		for lo <= hi {
 			mid := (lo + hi) / 2
-			face, ferr := opentype.NewFace(ttf, &opentype.FaceOptions{
-				Size: float64(mid),
-				DPI:  72,
-			})
+			face, ferr := opentype.NewFace(
+				ttf, &opentype.FaceOptions{
+					Size: float64(mid),
+					DPI:  72,
+				},
+			)
 			if ferr != nil {
 				return nil, ferr
 			}
@@ -162,10 +166,12 @@ func renderFittedText(text string, w, h int, opts textOpts) (*image.RGBA, error)
 			}
 		}
 		if bestFace == nil {
-			face, ferr := opentype.NewFace(ttf, &opentype.FaceOptions{
-				Size: float64(minFontPt),
-				DPI:  72,
-			})
+			face, ferr := opentype.NewFace(
+				ttf, &opentype.FaceOptions{
+					Size: float64(minFontPt),
+					DPI:  72,
+				},
+			)
 			if ferr != nil {
 				return nil, ferr
 			}
@@ -314,12 +320,14 @@ func warpAndComposite(bg image.Image, src *image.RGBA, dstCorners [4][2]float64)
 			}
 			dc := out.RGBAAt(x, y)
 			a := float64(sc.A) / 255
-			out.SetRGBA(x, y, color.RGBA{
-				R: uint8(float64(sc.R)*a + float64(dc.R)*(1-a)),
-				G: uint8(float64(sc.G)*a + float64(dc.G)*(1-a)),
-				B: uint8(float64(sc.B)*a + float64(dc.B)*(1-a)),
-				A: 255,
-			})
+			out.SetRGBA(
+				x, y, color.RGBA{
+					R: uint8(float64(sc.R)*a + float64(dc.R)*(1-a)),
+					G: uint8(float64(sc.G)*a + float64(dc.G)*(1-a)),
+					B: uint8(float64(sc.B)*a + float64(dc.B)*(1-a)),
+					A: 255,
+				},
+			)
 		}
 	}
 	return out
