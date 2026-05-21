@@ -3,7 +3,7 @@ package overlays
 import (
 	"bytes"
 	"image"
-	"image/png"
+	"image/gif"
 	"testing"
 )
 
@@ -13,11 +13,14 @@ func TestAmerica(t *testing.T) {
 	if err != nil {
 		t.Fatalf("America: %v", err)
 	}
-	got, err := png.Decode(bytes.NewReader(out))
+	got, err := gif.DecodeAll(bytes.NewReader(out))
 	if err != nil {
 		t.Fatalf("decode: %v", err)
 	}
-	if got.Bounds().Dx() != 32 || got.Bounds().Dy() != 32 {
-		t.Errorf("dims: got %v, want 32x32", got.Bounds())
+	if len(got.Image) == 0 {
+		t.Fatalf("expected at least one frame, got 0")
+	}
+	if b := got.Image[0].Bounds(); b.Dx() != 32 || b.Dy() != 32 {
+		t.Errorf("frame 0 dims: got %v, want 32x32", b)
 	}
 }

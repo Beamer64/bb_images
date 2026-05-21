@@ -7,11 +7,11 @@ import (
 	"testing"
 )
 
-func TestCommunism(t *testing.T) {
+func TestRain(t *testing.T) {
 	src := image.NewRGBA(image.Rect(0, 0, 32, 32))
-	out, err := Communism(src)
+	out, err := Rain(src)
 	if err != nil {
-		t.Fatalf("Communism: %v", err)
+		t.Fatalf("Rain: %v", err)
 	}
 	got, err := gif.DecodeAll(bytes.NewReader(out))
 	if err != nil {
