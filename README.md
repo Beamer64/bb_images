@@ -24,6 +24,14 @@ Every effect is one top-level function in a topic subpackage (`color.Sepia`, `an
 
 The tunable knobs — frame counts, opacity, jitter amplitude, palette choice — live as `const`s at the top of each filter's file so they're easy to find and tweak.
 
+---
+
+## Showcase
+
+A few showcase images can be found in the [showcase](https://github.com/Beamer64/bb_images/tree/264ea9fcb981b35e3baca5a986308c6195af92dc/showcase) folder.
+
+---
+
 ## Quick start
 
 ```go
